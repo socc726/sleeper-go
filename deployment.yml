@@ -1,0 +1,31 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sleeper-go
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      name: sleeper-go
+  template:
+    metadata:
+      labels:
+        name: sleeper-go
+    spec:
+      automountServiceAccountToken: true
+        serviceAccount: sleepergo-sa
+      containers:
+      - name: application
+        image: tesla369cybernetics/sleeper-go
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 3000
+        args:
+          - --lease-name=sleeper-lease
+        env:
+          - name: POD_NAME
+            valueFrom:
+                  fieldRef:
+                    apiVersion: v1
+                    fieldPath: metadata.name
